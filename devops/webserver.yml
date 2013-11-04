@@ -36,6 +36,9 @@
 
     - copy: src=configs/nginx.conf dest=/etc/nginx/nginx.conf owner=root
 
+    - name: start nginx service and have it run during system startup
+      action: service name=nginx state=started enabled=yes
+
     - name: create supervisord config folder
       action: file dest=/etc/supervisor state=directory owner=root
     
