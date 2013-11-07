@@ -1,7 +1,6 @@
 from flask import Blueprint, request, render_template, flash, g, session, \
     redirect, url_for, jsonify
 from app.search.helpers.lastfm import LastfmSearch
-import json
 
 mod = Blueprint('search', __name__, url_prefix="/1.0/search")
 
