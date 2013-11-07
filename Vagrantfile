@@ -16,7 +16,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define :db do |db_config|
-      db_config.vm.box = "precise32"
+      db_config.vm.box = "precise64"
       db_config.vm.network :private_network, ip: "192.168.33.22"
 
       db_config.vm.provision :ansible do |ansible|
