@@ -25,10 +25,14 @@
       action: pip name=$item state=latest
       with_items:
         - flask
-        - pymongo
-        - greenlet
+        - flask-login
+        - flask-rauth
+        - flask-wtf
         - gevent
+        - greenlet
         - gunicorn
+        - pymongo
+        - requests
         - supervisor
     
     - name: remove default nginx site
