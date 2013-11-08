@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, flash, g, session, \
     redirect, url_for, jsonify
 from app.search.helpers.lastfm import LastfmSearch
 
-mod = Blueprint('search', __name__, url_prefix="/1.0/search")
+mod = Blueprint('search', __name__, url_prefix="/api/1.0/search")
 
 @mod.route("/artist=<string:artist>", defaults={"lim":30}, methods=['GET'])
 @mod.route("/artist=<string:artist>&limit=<int:lim>", methods=['GET'])
