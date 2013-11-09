@@ -1,7 +1,6 @@
 from flask import Blueprint, request, render_template, flash, g, session,\
         redirect, url_for, jsonify, Response
 from flask.ext.login import current_user, login_required, logout_user
-from app.users.forms import RegistrationForm
 from app.users.models import User
 from app import login_manager
 from app.config.database import db
@@ -31,7 +30,7 @@ def generate_password_hash(password):
 
 def verify_password(email, password):
     user = db.users.find_one({"email":email})
-    if user['pw_hash'] == base64.b64encode(scrypt.hash(password.encode('utf8'), user['pw_salt'].encode('utf8'))):
+    if user != None and user['pw_hash'] == base64.b64encode(scrypt.hash(password.encode('utf8'), user['pw_salt'].encode('utf8'))):
         return True
     return False
 
@@ -66,6 +65,5 @@ def login():
 @mod.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
-    print session['user_id']
     logout_user()
     return "Bye!!!"
