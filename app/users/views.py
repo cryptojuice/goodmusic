@@ -28,9 +28,8 @@ def generate_password_hash(password):
     pw_hash = base64.b64encode(scrypt.hash(password, pw_salt))
     return pw_hash, pw_salt
 
-def verify_password(email, password):
-    user = db.users.find_one({"email":email})
-    if user != None and user['pw_hash'] == base64.b64encode(scrypt.hash(password.encode('utf8'), user['pw_salt'].encode('utf8'))):
+def verify_password(password, pw_hash, pw_salt):
+    if pw_hash == base64.b64encode(scrypt.hash(password.encode('utf8'), pw_salt.encode('utf8'))):
         return True
     return False
 
@@ -42,24 +41,36 @@ def register():
     pw_hash, pw_salt = generate_password_hash(password)
 
     if db.users.find_one({"email":email}) is None:
-        user = {"email":email, "username":username, "pw_hash":pw_hash, "pw_salt":pw_salt}
-        session['user_id'] = str(db.users.insert(user))
-        ret = json_util.dumps(db.users.find_one(user)['_id'])
+        user = {"email":email, "accounts": {"kind":{"internal":{"username":username, "pw_hash":pw_hash, "pw_salt":pw_salt}}}}
+        db.users.save(user)
+        ret = json_util.dumps({"message":"account created", "status":"success"})
+        resp = Response(response=ret,
+                        status=201,
+                        mimetype="application/json")
+        return resp
+    else:
+        ret = json_util.dumps({"message":"Email already exist in database"})
         resp = Response(response=ret,
                         status=200,
                         mimetype="application/json")
         return resp
-    else:
-        return "Email address {0} already has an account.".format(email)
 
 @mod.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
     password = request.form['password']
     user = db.users.find_one({"email":email})
-    if verify_password(email, password):
-        session['user_id'] = str(user['_id'])
-        return redirect("/index.html")
+    if user is not None:
+        pw_hash = user['accounts']['kind']['internal']['pw_hash']
+        pw_salt = user['accounts']['kind']['internal']['pw_salt']
+        if verify_password(password, pw_hash, pw_salt):
+            ret = json_util.dumps({"username":user['accounts']['kind']['internal']['username']})
+            resp = Response(response=ret, status=200, mimetype="application/json")
+            return resp
+        else:
+            ret = json_util.dumps({"message":"Incorrect Username or Password."})
+            resp = Response(response=ret, status=401, mimetype="application/json")
+            return resp
     return "Incorrect e-mail or password."
 
 @mod.route('/logout', methods=['GET', 'POST'])
