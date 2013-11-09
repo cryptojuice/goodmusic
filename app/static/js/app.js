@@ -6,13 +6,42 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider, $loc
     $locationProvider.html5Mode(true);
 }]);
 
-app.controller('LoginCtrl', ['$scope', '$http', 'LoginService', function($scope, $http){
+app.controller('LoginCtrl', ['$scope', '$http', 'LoginService', function($scope, $http, LoginService){
     $scope.sayHello = "Hello from login";
+
+    var User = LoginService;
+
+    $scope.login = function() {
+        var xsrf = $.param({email:"example@example.com", password:"default"});
+        var config = { 
+            method: "POST",
+            url: "/api/1.0/users/login",
+            data: xsrf,
+            headers: {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
+        };
+
+        $http(config)
+        .success(function(data, status, headers, config) {
+            if (status == 200) {
+                // succefull login
+                console.log(data);
+                User.isAuthenticated = true;
+                User.username = data.username;
+            }
+            else {
+                User.isAuthenticated = false;
+            }
+        })
+        .error(function(data, status, headers, config) {
+            User.isAuthenticated = false;
+            User.username = '';
+        });
+}
 }]);
 
 app.factory('LoginService', [function() {
     var sdo = {
-        isLogged: false,
+        isAuthenticated: false,
         username: ''
     };
     return sdo;
