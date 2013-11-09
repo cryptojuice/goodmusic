@@ -9,7 +9,7 @@ from os import urandom
 import scrypt, base64
 
 
-mod = Blueprint('users', __name__, url_prefix='/api/1.0/users')
+mod = Blueprint('users', __name__, url_prefix='/api/v1/users')
 
 @login_manager.user_loader
 def load_user(userid):
