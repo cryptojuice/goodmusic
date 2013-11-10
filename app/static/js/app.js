@@ -2,17 +2,26 @@ var app = angular.module('goodmusic', ['ngRoute']);
 
 app.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider.when('/login', { templateUrl: 'partials/login.html', controller: 'LoginCtrl'});
+    $routeProvider.when('/usertest', { templateUrl: 'partials/usertest.html', controller: 'TestCtrl'});
     $routeProvider.otherwise({ redirectTo: '/login' });
     $locationProvider.html5Mode(true);
 }]);
 
-app.controller('LoginCtrl', ['$scope', '$http', 'LoginService', function($scope, $http, LoginService){
-    $scope.sayHello = "Hello from login";
+app.controller('TestCtrl', ['$scope', '$http', 'UserService', function($scope, $http, UserService){
+    var User = UserService;
+    $scope.isAuthenticated = User;
+}]);
 
-    var User = LoginService;
+app.controller('LoginCtrl', ['$scope', '$http', 'UserService', function($scope, $http, UserService){
+
+    var User = UserService;
+
+    $scope.email = ""; 
+    $scope.password = "";
 
     $scope.login = function() {
-        var xsrf = $.param({email:"example@example.com", password:"default"});
+
+        var xsrf = $.param({email:$scope.email, password:$scope.password});
         var config = { 
             method: "POST",
             url: "/api/v1/users/login",
@@ -23,7 +32,7 @@ app.controller('LoginCtrl', ['$scope', '$http', 'LoginService', function($scope,
         $http(config)
         .success(function(data, status, headers, config) {
             if (status == 200) {
-                console.log(data);
+                console.log('authenticated');
                 User.isAuthenticated = true;
                 User.username = data.username;
             }
@@ -32,13 +41,14 @@ app.controller('LoginCtrl', ['$scope', '$http', 'LoginService', function($scope,
             }
         })
         .error(function(data, status, headers, config) {
+            console.log("failed");
             User.isAuthenticated = false;
             User.username = '';
         });
     };
 }]);
 
-app.factory('LoginService', [function() {
+app.factory('UserService', [function() {
     var sdo = {
         isAuthenticated: false,
         username: ''
