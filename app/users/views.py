@@ -64,14 +64,13 @@ def login():
         pw_hash = user['accounts']['kind']['internal']['pw_hash']
         pw_salt = user['accounts']['kind']['internal']['pw_salt']
         if verify_password(password, pw_hash, pw_salt):
+            session['user_id'] = str(user['_id'])
             ret = json_util.dumps({"username":user['accounts']['kind']['internal']['username']})
             resp = Response(response=ret, status=200, mimetype="application/json")
             return resp
-        else:
-            ret = json_util.dumps({"message":"Incorrect Username or Password."})
-            resp = Response(response=ret, status=401, mimetype="application/json")
-            return resp
-    return "Incorrect e-mail or password."
+    ret = json_util.dumps({"message":"Incorrect Username or Password."})
+    resp = Response(response=ret, status=401, mimetype="application/json")
+    return resp
 
 @mod.route('/logout', methods=['GET', 'POST'])
 @login_required
