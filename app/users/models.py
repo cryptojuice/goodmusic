@@ -1,14 +1,11 @@
-from app.config.database import db
+import datetime
+from app import db
 
-collection = db.users
-
-class User:
-
-    def __init__(self, _id=None, email=None, username=None, password=None):
-        self._id = _id
-        self.email = email
-        self.username = username
-        self.password = password
+class User(db.Document):
+    created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
+    email = db.EmailField(required=True)
+    accounts = db.DictField()
+    
 
     def is_authenticated(self):
         return True
@@ -18,4 +15,7 @@ class User:
 
     def is_anonymous(self):
         return False
+
+    def get_id(self):
+        return str(self.id)
     
