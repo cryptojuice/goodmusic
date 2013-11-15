@@ -1,4 +1,4 @@
-var app = angular.module('goodmusic', ['ngRoute']);
+var app = angular.module('goodmusic', ['ngRoute', 'ngStorage']);
 
 app.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider.when('/login', { templateUrl: 'partials/login.html', controller: 'LoginCtrl'});
@@ -7,14 +7,13 @@ app.config(['$routeProvider', '$locationProvider', function($routeProvider, $loc
     $locationProvider.html5Mode(true);
 }]);
 
-app.controller('TestCtrl', ['$scope', '$http', 'UserService', function($scope, $http, UserService){
-    var User = UserService;
-    $scope.isAuthenticated = User;
+app.controller('TestCtrl', ['$scope', '$http', 'UserService', '$sessionStorage', function($scope, $http, UserService, $sessionStorage){
+    $scope.user = UserService
+    $scope.$storage = $sessionStorage;
+    console.log($sessionStorage.inAuthenticated);
 }]);
 
-app.controller('LoginCtrl', ['$scope', '$http', 'UserService', function($scope, $http, UserService){
-
-    var User = UserService;
+app.controller('LoginCtrl', ['$scope', '$http', 'UserService', '$sessionStorage', function($scope, $http, UserService, $sessionStorage){
 
     $scope.email = ""; 
     $scope.password = "";
@@ -33,25 +32,33 @@ app.controller('LoginCtrl', ['$scope', '$http', 'UserService', function($scope, 
         .success(function(data, status, headers, config) {
             if (status == 200) {
                 console.log('authenticated');
-                User.isAuthenticated = true;
-                User.username = data.username;
+                $sessionStorage.isAuthenticated = true;
+                $sessionStorage.username = data.username;
             }
             else {
-                User.isAuthenticated = false;
+                $sessionStorage.isAuthenticated = false;
             }
         })
         .error(function(data, status, headers, config) {
-            console.log("failed");
-            User.isAuthenticated = false;
-            User.username = '';
+            $sessionStorage.isAuthenticated = false;
+            $sessionStorage.username = '';
         });
     };
 }]);
 
-app.factory('UserService', [function() {
-    var sdo = {
+app.factory('UserService', ['$sessionStorage', function($sessionStorage) {
+    if($sessionStorage.isAuthenticated){
+        console.log('session is authenticated');
+        return {
+            isAuthenticated: true,
+            username: $sessionStorage.username
+        };
+    } else {
+        console.log('session is not authenticated');
+    }
+    
+    return {
         isAuthenticated: false,
         username: ''
     };
-    return sdo;
 }]);
