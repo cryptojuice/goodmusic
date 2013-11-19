@@ -1,7 +1,6 @@
-var loginModule = angular.module('LoginModule', []);
+angular.module('LoginModule', []);
 
-
-loginModule.controller('LoginController', ['$scope', '$http', 'LoginService', '$sessionStorage', function($scope, $http, UserService, $sessionStorage){
+angular.module('LoginModule').controller('LoginController', ['$scope', '$http', 'LoginService', '$sessionStorage', function($scope, $http, UserService, $sessionStorage){
 
     $scope.email = ""; 
     $scope.password = "";
@@ -34,7 +33,7 @@ loginModule.controller('LoginController', ['$scope', '$http', 'LoginService', '$
     };
 }]);
 
-loginModule.factory('LoginService', ['$sessionStorage', function($sessionStorage) {
+angular.module('LoginModule').factory('LoginService', ['$sessionStorage', function($sessionStorage) {
     if($sessionStorage.isAuthenticated){
         console.log('session is authenticated');
         return {
