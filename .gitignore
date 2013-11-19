@@ -2,3 +2,4 @@
 .DS_Store
 .vagrant/
 app/config/keys.py
+app/static/bower_components/*
