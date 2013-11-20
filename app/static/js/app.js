@@ -1,30 +1,21 @@
 angular.module('goodmusic', [
         'ui.router',
-        'ngRoute', 
         'ngStorage', 
         'ngResource',
         'NavModule',
-        'LoginModule',
+        'UserModule',
         'SearchModule'
         ]);
 
-angular.module('goodmusic').config(['$routeProvider', '$stateProvider', '$locationProvider', 
-        function($routeProvider, $stateProvider, $locationProvider) {
+angular.module('goodmusic').config(['$urlRouterProvider', '$stateProvider', '$locationProvider', 
+        function($urlRouterProvider, $stateProvider, $locationProvider) {
 
     $stateProvider.state('home', {
         url: '/',
-        template:"<h1>you are home</h1>"
+        template:"<h1>GoodMusic</h1>"
     });
-    $stateProvider.state('login', {
-        url: '/login',
-        templateUrl: 'partials/login.html',
-        controller: 'LoginController'
-    });
-    $stateProvider.state('search', {
-        url: '/search',
-        templateUrl: 'partials/search.html',
-        controller: 'SearchController'
-    });
+
+    $urlRouterProvider.otherwise('/');
 
     $locationProvider.html5Mode(true);
 }]);
